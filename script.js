@@ -2,7 +2,6 @@ const STORAGE_KEY = "meri-game-state-v3";
 const MAX_CARDS = 12;
 
 const cardGrid = document.getElementById("cardGrid");
-const nextBtn = document.getElementById("nextBtn");
 const startBtn = document.getElementById("startBtn");
 const resetBtn = document.getElementById("resetBtn");
 const scoreEl = document.getElementById("score");
@@ -26,6 +25,8 @@ let state = {
   playOrder: [],
   playPointer: 0,
 };
+let lastHintText = "";
+let lastHintState = "";
 
 function escapeHtml(value) {
   return value
@@ -66,18 +67,41 @@ function updateScore() {
 }
 
 function updatePhaseText() {
+  let nextStateClass = "is-edit";
+  let nextText = "";
   if (state.mode === "edit") {
-    phaseHintEl.textContent = `Card ${state.editIndex + 1} of ${state.cards.length} (max ${MAX_CARDS}). Fill both sides, then click Next Card or Start Game.`;
-    return;
+    nextStateClass = "is-edit";
+    const readyCount = state.cards.filter(isCardFilled).length;
+    if (canStartGame()) {
+      nextText = `✅ All cards ready (${readyCount}/${state.cards.length}). You can tap Start Game now.`;
+    } else {
+      nextText = `✍️ ${readyCount}/${state.cards.length} cards ready. Start Game is locked until every card has both front and back filled.`;
+    }
+  } else if (state.mode === "done") {
+    nextStateClass = "is-done";
+    nextText = `🎉 Finished! Your score is ${state.score} / ${state.cards.length}. Tap Reset Game to play again.`;
+  } else {
+    nextStateClass = "is-play";
+    const remaining = state.cards.filter((card) => !card.submitted).length;
+    nextText = `🎯 Game started! ${remaining} card(s) left. Flip the card, then tap ✅ or ❌.`;
   }
 
-  if (state.mode === "done") {
-    phaseHintEl.textContent = `Game finished! Final score: ${state.score} / ${state.cards.length}. Use Reset Game to play again.`;
-    return;
-  }
+  phaseHintEl.classList.remove("is-edit", "is-play", "is-done");
+  phaseHintEl.classList.add(nextStateClass);
+  phaseHintEl.textContent = nextText;
 
-  const remaining = state.cards.filter((card) => !card.submitted).length;
-  phaseHintEl.textContent = `Play mode: ${remaining} card(s) left. Flip card, then tap ✅ or ❌.`;
+  if (nextText !== lastHintText || nextStateClass !== lastHintState) {
+    animatePhaseHint();
+    lastHintText = nextText;
+    lastHintState = nextStateClass;
+  }
+}
+
+function animatePhaseHint() {
+  phaseHintEl.classList.remove("pulse-in");
+  // Trigger reflow so animation restarts every message update.
+  void phaseHintEl.offsetWidth;
+  phaseHintEl.classList.add("pulse-in");
 }
 
 function saveState() {
@@ -155,6 +179,10 @@ function renderCards() {
          <button type="button" class="flip-edit-btn secondary" data-index="${idx}" data-flip="back">Flip</button>
        </div>`;
 
+  const canGoNext =
+    state.mode === "edit" && isCardFilled(card) && state.cards.length < MAX_CARDS;
+  const nextAttr = canGoNext ? "" : "disabled";
+
   const backValue = isPlayMode
     ? `${submittedBadge}<p class="play-value">${meaningSafe || "-"}</p>
        <div class="play-actions">
@@ -164,6 +192,7 @@ function renderCards() {
     : `<input type="text" class="meaning-input" data-index="${idx}" value="${meaningSafe}" placeholder="Meaning" maxlength="120" />
        <div class="edit-actions">
          <button type="button" class="flip-edit-btn secondary" data-index="${idx}" data-flip="front">Flip</button>
+         <button type="button" class="next-card-btn secondary" data-index="${idx}" ${nextAttr} aria-label="Next card">+ Next</button>
        </div>`;
 
   const removeButton =
@@ -188,10 +217,6 @@ function renderCards() {
 }
 
 function render() {
-  nextBtn.disabled =
-    state.mode !== "edit" ||
-    !currentEditCardFilled() ||
-    state.cards.length >= MAX_CARDS;
   startBtn.disabled = state.mode !== "edit" || !canStartGame();
   updateScore();
   updatePhaseText();
@@ -217,10 +242,14 @@ function handleGridInput(event) {
 
   const cardEl = target.closest(".card");
   if (cardEl) {
-    cardEl.classList.toggle("ready", isCardFilled(state.cards[idx]));
+    const isReady = isCardFilled(state.cards[idx]);
+    cardEl.classList.toggle("ready", isReady);
+    const nextBtnEl = cardEl.querySelector(".next-card-btn");
+    if (nextBtnEl) {
+      nextBtnEl.disabled = !isReady || state.cards.length >= MAX_CARDS;
+    }
   }
 
-  nextBtn.disabled = !currentEditCardFilled() || state.cards.length >= MAX_CARDS;
   startBtn.disabled = !canStartGame();
   updatePhaseText();
   saveState();
@@ -259,6 +288,12 @@ function handleGridClick(event) {
     }
 
     const editFlipBtn = target.closest(".flip-edit-btn");
+    const nextCardBtn = target.closest(".next-card-btn");
+    if (nextCardBtn) {
+      goNextCard();
+      return;
+    }
+
     if (!editFlipBtn) return;
 
     const direction = editFlipBtn.getAttribute("data-flip");
@@ -343,7 +378,6 @@ function resetGame() {
 
 cardGrid.addEventListener("input", handleGridInput);
 cardGrid.addEventListener("click", handleGridClick);
-nextBtn.addEventListener("click", goNextCard);
 startBtn.addEventListener("click", startGame);
 resetBtn.addEventListener("click", resetGame);
 

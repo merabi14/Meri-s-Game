@@ -16,16 +16,15 @@
             <span class="score-fill" id="scoreFill"></span>
           </div>
         </section>
-        <div class="controls">
-          <button id="nextBtn" disabled>Next Card</button>
-          <button id="startBtn" disabled>Start Game</button>
-          <button id="resetBtn" class="secondary">Reset Game</button>
-        </div>
       </header>
       <section class="phase-hint" id="phaseHint">
         Fill this card, then click Next Card or Start Game.
       </section>
       <section class="card-grid" id="cardGrid" aria-label="Flashcards"></section>
+      <section class="controls bottom-controls" aria-label="Game controls">
+        <button id="startBtn" class="secondary" disabled>Start Game</button>
+        <button id="resetBtn">Reset Game</button>
+      </section>
     </main>
     <script src="script.js"></script>
   </body>
