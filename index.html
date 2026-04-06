@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meri`s Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="top">
+        <h1>Meri`s Game</h1>
+        <section class="score-panel" aria-label="Score panel">
+          <p class="score" id="score">0 / 6</p>
+          <div class="score-track" aria-hidden="true">
+            <span class="score-fill" id="scoreFill"></span>
+          </div>
+        </section>
+        <div class="count-picker" role="group" aria-label="Choose card amount">
+          <span class="count-label">Cards:</span>
+          <button type="button" class="count-btn active" data-count="6">6</button>
+          <button type="button" class="count-btn" data-count="9">9</button>
+          <button type="button" class="count-btn" data-count="12">12</button>
+        </div>
+        <div class="controls">
+          <button id="startBtn" disabled>Start Game</button>
+          <button id="resetBtn" class="secondary">Reset Game</button>
+        </div>
+      </header>
+
+      <section class="phase-hint" id="phaseHint">
+        Phase 1: Write words and meanings for all 6 cards.
+      </section>
+
+      <section class="card-grid" id="cardGrid" aria-label="Flashcards"></section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
