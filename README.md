@@ -1,89 +1,41 @@
 # Meri`s Game
 
-A lightweight browser-based flashcard game built with plain HTML, CSS, and vanilla JavaScript.
+Simple word-memory game for players.
 
-Players create word/meaning cards, start the game, flip cards, and mark whether they knew the answer to earn points.
+## How to play
 
-## Features
+1. Write a **word** on the front side of the card.
+2. Tap **Flip** and write the **meaning/translation** on the back side.
+3. Tap **+ Next** to add another card (up to 12 cards).
+4. When all your cards are ready, tap **Start Game**.
 
-- No backend, no database, no frameworks
-- Runs fully in browser
-- Card count picker: `6`, `9`, or `12`
-- 3-phase flow:
-  - Edit cards (write words and meanings)
-  - Start game (inputs locked)
-  - Play mode (flip + submit answer)
-- Score panel with progress bar
-- Card states:
-  - Ready cards highlighted in edit mode
-  - Submitted cards gray in play mode
-  - Submitted result badge (`✅ Correct` / `❌ Wrong`)
-- Reset game button
-- Local storage support (state persists across refresh)
-- Responsive layout for desktop and mobile
+## During the game
 
-## Tech Stack
+- One card appears at a time in random order.
+- Tap the card to flip and see the meaning.
+- Tap:
+  - `✅` if you knew it (you get 1 point)
+  - `❌` if you did not know it (no point)
 
-- `index.html`
-- `style.css`
-- `script.js`
+## Score
 
-## Project Structure
+- Score is shown at the top as `Score: X / Total`.
+- The progress bar fills as your score increases.
 
-```text
-flashcard-game/
-│
-├── index.html
-├── style.css
-├── script.js
-└── README.md
-```
+## Messages
 
-## How To Run
+- The game shows clear status messages:
+  - when cards are not ready
+  - when game starts
+  - when game finishes with final score
 
-### Option 1 (quickest)
+## Controls
 
-Open `index.html` directly in your browser.
+- **Start Game**: starts the quiz after all cards are complete
+- **Reset Game**: clears all cards and starts over
+- **✕ on card**: removes a card (before starting the game)
 
-### Option 2 (local static server)
+## Quick tips
 
-Use any static server (VS Code Live Server, Python, Nginx, Apache, etc.).
-
-Example with Python:
-
-```bash
-python -m http.server 8080
-```
-
-Then open:
-
-`http://localhost:8080`
-
-## Game Flow
-
-1. Choose card amount (`6`, `9`, or `12`)
-2. Fill **Front** and **Back** for each card
-3. Click **Start Game**
-4. In play mode:
-   - Click card to flip
-   - Press `✅` if correct (adds score)
-   - Press `❌` if not (no score)
-5. Card becomes submitted (gray) and shows what you chose
-6. Use **Reset Game** to clear and start over
-
-## Notes
-
-- Card count can only be changed in edit mode (before starting the game).
-- Start button is enabled only when all cards are fully filled.
-- Game data is stored in browser local storage.
-
-## Deployment
-
-This project is ready for static hosting:
-
-- GitHub Pages
-- Netlify
-- Vercel (static)
-- Nginx / Apache
-
-No server-side code is required.
+- If **Start Game** is disabled, fill both front and back on all cards.
+- You can play with any number of cards from 1 to 12.

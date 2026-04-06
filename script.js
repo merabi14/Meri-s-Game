@@ -30,11 +30,11 @@ let lastHintState = "";
 
 function escapeHtml(value) {
   return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function isCardFilled(card) {
@@ -120,8 +120,8 @@ function loadState() {
       parsed.mode === "play" || parsed.mode === "done" ? parsed.mode : "edit";
     state.score = Number.isInteger(parsed.score) ? parsed.score : 0;
     state.cards = parsed.cards.slice(0, MAX_CARDS).map((card) => ({
-      word: String(card.word ?? ""),
-      meaning: String(card.meaning ?? ""),
+      word: String(card.word != null ? card.word : ""),
+      meaning: String(card.meaning != null ? card.meaning : ""),
       answeredCorrect: Boolean(card.answeredCorrect),
       submitted: Boolean(card.submitted),
     }));
